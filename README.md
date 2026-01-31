@@ -1,5 +1,5 @@
 # Course Introduction & General Rules
-[the course transformation demo](https://naziherrahel.github.io/sdt-2026-demo/)
+[the course transformation demo](https://naziherrahel.github.io/Software_development_technologies/)
 
 Welcome to this course.
 
