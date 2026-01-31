@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDT 2026 - Nazih Errahel</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-dark: #0d1117;
+            --bg-light: #f6f8fa;
+            --text-dark: #24292f;
+            --text-muted: #8b949e;
+            --accent-green: #7ee787;
+            --accent-blue: #79c0ff;
+            --accent-red: #f85149;
+            --success: #3fb950;
+        }
+
+        body {
+            background: var(--bg-dark);
+            color: var(--text-muted);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", monospace;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* Left Panel - The Past (NOW SCROLLABLE) */
+        .panel-left {
+            width: 50%;
+            background: var(--bg-light);
+            color: var(--text-dark);
+            padding: 40px 50px;
+            font-family: Georgia, "Times New Roman", serif;
+            overflow-y: auto; /* ADDED: Scroll if content overflows */
+            max-height: 100vh;
+        }
+
+        .panel-left::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 50%;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%239C92AC' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .syllabus-header {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: #57606a;
+            border-bottom: 3px double #d0d7de;
+            padding-bottom: 15px;
+        }
+
+        .syllabus-item {
+            padding: 15px;
+            margin: 10px 0;
+            background: white;
+            border-left: 5px solid #d0d7de;
+            font-size: 16px;
+            line-height: 1.4;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            opacity: 0;
+            transform: translateX(-30px);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .syllabus-item.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .syllabus-item.obsolete {
+            text-decoration: line-through;
+            opacity: 0.4;
+            border-left-color: var(--accent-red);
+            background: #fff5f5;
+        }
+
+        .week-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #8c959f;
+            margin-bottom: 4px;
+            font-family: monospace;
+        }
+
+        /* Right Panel - The Future */
+        .panel-right {
+            width: 50%;
+            background: var(--bg-dark);
+            padding: 40px 50px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .terminal-header {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            font-family: "SF Mono", Monaco, "Courier New", monospace;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #30363d;
+            flex-shrink: 0;
+        }
+
+        .terminal {
+            flex: 1;
+            font-family: "SF Mono", Monaco, "Courier New", monospace;
+            font-size: 14px;
+            line-height: 1.8;
+            overflow-y: auto;
+            position: relative;
+            min-height: 0;
+        }
+
+        .terminal-line {
+            margin: 3px 0;
+            opacity: 0;
+            transform: translateX(-20px);
+            animation: slideIn 0.4s ease forwards;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .line-prompt { color: var(--accent-green); }
+        .line-command { color: var(--accent-blue); }
+        .line-output { color: var(--text-muted); }
+        .line-success { color: var(--success); font-weight: 600; }
+        .line-error { color: var(--accent-red); }
+
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 18px;
+            background: var(--accent-green);
+            animation: blink 1s step-end infinite;
+            vertical-align: middle;
+            margin-left: 4px;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        /* Docker Progress */
+        .docker-progress {
+            margin-top: 20px;
+            padding: 15px;
+            background: #161b22;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.5s ease;
+            flex-shrink: 0;
+        }
+
+        .docker-progress.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .progress-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-family: monospace;
+        }
+
+        .progress-bar-bg {
+            height: 6px;
+            background: #21262d;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #238636, var(--success));
+            width: 0%;
+            transition: width 0.3s linear;
+        }
+
+        .progress-steps {
+            margin-top: 10px;
+            font-size: 11px;
+            color: var(--text-muted);
+            font-family: monospace;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px 20px;
+        }
+
+        .step {
+            opacity: 0.5;
+            transition: opacity 0.3s;
+        }
+
+        .step.active {
+            opacity: 1;
+            color: var(--text-muted);
+        }
+
+        .step.done {
+            opacity: 0.4;
+            text-decoration: line-through;
+        }
+
+        /* Final Screen */
+        .final-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            text-align: center;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        .final-screen.active {
+            display: flex;
+            animation: fadeIn 0.8s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            margin-bottom: 40px;
+            text-align: left;
+        }
+
+        .comparison-col h3 {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .comp-item {
+            font-size: 20px;
+            margin: 15px 0;
+            padding-left: 15px;
+            border-left: 4px solid;
+            line-height: 1.3;
+        }
+
+        .comp-old {
+            border-color: var(--accent-red);
+            color: var(--text-muted);
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+
+        .comp-new {
+            border-color: var(--success);
+            color: #f0f6fc;
+            font-weight: 500;
+        }
+
+        .instructor-name {
+            font-size: 48px;
+            font-weight: 800;
+            color: #f0f6fc;
+            margin-bottom: 15px;
+            letter-spacing: -1px;
+        }
+
+        .instructor-context {
+            font-size: 18px;
+            color: var(--text-muted);
+            max-width: 600px;
+            line-height: 1.5;
+        }
+
+        .tagline {
+            margin-top: 30px;
+            font-size: 24px;
+            color: var(--accent-blue);
+            font-weight: 600;
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+    <div class="container">
+        <div class="panel-left">
+            <div class="syllabus-header">Software Development Technologies (2023)</div>
+
+            <div class="syllabus-item" data-index="0">
+                <div class="week-label">Weeks 1-4</div>
+                <div>Python Basics: print(), loops, functions</div>
+            </div>
+
+            <div class="syllabus-item" data-index="1">
+                <div class="week-label">Weeks 5-8</div>
+                <div>Object-Oriented Programming: theory and diagrams</div>
+            </div>
+
+            <div class="syllabus-item" data-index="2">
+                <div class="week-label">Weeks 9-10</div>
+                <div>Introduction to Agile: PowerPoint presentations</div>
+            </div>
+
+            <div class="syllabus-item" data-index="3">
+                <div class="week-label">Weeks 11-12</div>
+                <div>Waterfall Model: flowcharts and documentation</div>
+            </div>
+
+            <div class="syllabus-item" data-index="4">
+                <div class="week-label">Weeks 13-14</div>
+                <div>Final Project: Console-based calculator</div>
+            </div>
+
+            <div class="syllabus-item" data-index="5" style="margin-top: 20px; font-style: italic;">
+                <div class="week-label">Assessment</div>
+                <div>Multiple choice examination (60% of grade)</div>
+            </div>
+        </div>
+
+        <div class="panel-right">
+            <div class="terminal-header">
+                nazih@errahel:~/sdt-2026<span class="cursor"></span>
+            </div>
+            <div class="terminal" id="terminal"></div>
+            <div class="docker-progress" id="dockerProgress">
+                <div class="progress-label">Building production container...</div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="progressBar"></div>
+                </div>
+                <div class="progress-steps" id="progressSteps">
+                    <div class="step" data-step="1">⏳ FROM node:18-alpine</div>
+                    <div class="step" data-step="2">⏳ WORKDIR /app</div>
+                    <div class="step" data-step="3">⏳ COPY package*.json</div>
+                    <div class="step" data-step="4">⏳ RUN npm ci</div>
+                    <div class="step" data-step="5">⏳ COPY . .</div>
+                    <div class="step" data-step="6">⏳ RUN npm run build</div>
+                    <div class="step" data-step="7">⏳ EXPOSE 3000</div>
+                    <div class="step" data-step="8">⏳ CMD ["npm", "start"]</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="final-screen" id="finalScreen">
+        <div class="comparison-grid">
+            <div class="comparison-col">
+                <h3>2023 Curriculum</h3>
+                <div class="comp-item comp-old">Python print()</div>
+                <div class="comp-item comp-old">PowerPoint Agile</div>
+                <div class="comp-item comp-old">Theory & Diagrams</div>
+                <div class="comp-item comp-old">Console Applications</div>
+            </div>
+            <div class="comparison-col">
+                <h3>2026 Curriculum</h3>
+                <div class="comp-item comp-new">Docker Containers</div>
+                <div class="comp-item comp-new">Cloud Deployment</div>
+                <div class="comp-item comp-new">Git Workflows</div>
+                <div class="comp-item comp-new">Production Microservices</div>
+            </div>
+        </div>
+        <div class="instructor-name">Nazih Errahel</div>
+        <div class="instructor-context">
+            I took this course in 2023. I graduated from this program.<br>
+            Now I am rewriting what I wish I had learned.
+        </div>
+        <div class="tagline">Same course name. Different century.</div>
+    </div>
+
+    <script>
+        class SyllabusTransformer {
+            constructor() {
+                this.terminal = document.getElementById("terminal");
+                this.progressBar = document.getElementById("progressBar");
+                this.dockerProgress = document.getElementById("dockerProgress");
+                this.finalScreen = document.getElementById("finalScreen");
+                this.timeline = [];
+                this.READING_TIME = 2500;
+                this.CMD_TIME = 1500;
+                this.init();
+            }
+
+            init() {
+                this.buildTimeline();
+                this.showOldSyllabus();
+                setTimeout(() => this.executeTimeline(), 2000);
+            }
+
+            buildTimeline() {
+                let t = 0;
+
+                t += this.CMD_TIME;
+                this.timeline.push({ time: t, action: () => this.typeCommand("cat old_syllabus.txt") });
+
+                t += this.READING_TIME;
+                this.timeline.push({ time: t, action: () => this.printOutput("Loading 2023 curriculum...") });
+
+                t += this.READING_TIME;
+                this.timeline.push({ time: t, action: () => this.printOutput("Found: Python basics, OOP theory, Agile slides") });
+
+                t += this.READING_TIME;
+                this.timeline.push({ time: t, action: () => this.printOutput("Assessment: Multiple choice exam (60%)") });
+
+                t += 3000;
+                this.timeline.push({ time: t, action: () => this.obsoleteOldSyllabus() });
+
+                t += 2000;
+
+                t += this.CMD_TIME;
+                this.timeline.push({ time: t, action: () => this.typeCommand("git init") });
+
+                t += this.READING_TIME;
+                this.timeline.push({ time: t, action: () => this.printSuccess("Initialized empty Git repository in .git/") });
+
+                t += 2000;
+
+                t += this.CMD_TIME;
+                this.timeline.push({ time: t, action: () => this.typeCommand("docker build -t sdt-2026 .") });
+
+                t += 1000;
+                this.timeline.push({ time: t, action: () => this.startDockerBuild() });
+
+                const buildSteps = [
+                    "Step 1/8 : FROM node:18-alpine",
+                    "Step 2/8 : WORKDIR /app",
+                    "Step 3/8 : COPY package*.json ./",
+                    "Step 4/8 : RUN npm ci",
+                    "Step 5/8 : COPY . .",
+                    "Step 6/8 : RUN npm run build",
+                    "Step 7/8 : EXPOSE 3000",
+                    "Step 8/8 : CMD [\"npm\", \"start\"]"
+                ];
+
+                buildSteps.forEach((step, index) => {
+                    t += 2500;
+                    this.timeline.push({
+                        time: t,
+                        action: () => {
+                            this.printOutput(step);
+                            this.updateDockerStep(index + 1);
+                        }
+                    });
+                });
+
+                t += 2000;
+                this.timeline.push({ time: t, action: () => this.printSuccess("Successfully built sdt-2026:latest") });
+
+                t += 3000;
+
+                t += this.CMD_TIME;
+                this.timeline.push({ time: t, action: () => this.typeCommand("docker run -p 3000:3000 sdt-2026") });
+
+                t += this.READING_TIME;
+                this.timeline.push({ time: t, action: () => this.printSuccess("Server running on http://localhost:3000") });
+
+                t += this.READING_TIME;
+                this.timeline.push({ time: t, action: () => this.printSuccess("Production microservice deployed and running") });
+
+                t += 3000;
+
+                t += this.CMD_TIME;
+                this.timeline.push({ time: t, action: () => this.typeCommand("# This is what you will build") });
+
+                t += 4000;
+                this.timeline.push({ time: t, action: () => this.showFinal() });
+            }
+
+            showOldSyllabus() {
+                const items = document.querySelectorAll(".syllabus-item");
+                items.forEach((item, index) => {
+                    setTimeout(() => {
+                        item.classList.add("visible");
+                    }, index * 200);
+                });
+            }
+
+            obsoleteOldSyllabus() {
+                const items = document.querySelectorAll(".syllabus-item");
+                items.forEach((item, index) => {
+                    setTimeout(() => {
+                        item.classList.add("obsolete");
+                    }, index * 150);
+                });
+            }
+
+            typeCommand(cmd) {
+                const line = document.createElement("div");
+                line.className = "terminal-line";
+                line.innerHTML = `<span class="line-prompt">nazih@errahel:~/sdt-2026$</span> <span class="line-command">${cmd}</span>`;
+                this.terminal.appendChild(line);
+                this.scrollToBottom();
+            }
+
+            printOutput(text) {
+                const line = document.createElement("div");
+                line.className = "terminal-line";
+                line.innerHTML = `<span class="line-output">${text}</span>`;
+                this.terminal.appendChild(line);
+                this.scrollToBottom();
+            }
+
+            printSuccess(text) {
+                const line = document.createElement("div");
+                line.className = "terminal-line";
+                line.innerHTML = `<span class="line-success">✓ ${text}</span>`;
+                this.terminal.appendChild(line);
+                this.scrollToBottom();
+            }
+
+            startDockerBuild() {
+                this.dockerProgress.classList.add("visible");
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += 1.5;
+                    if (progress >= 100) {
+                        progress = 100;
+                        clearInterval(interval);
+                    }
+                    this.progressBar.style.width = progress + "%";
+                }, 250);
+            }
+
+            updateDockerStep(stepNum) {
+                const steps = document.querySelectorAll(".step");
+                steps.forEach((step, index) => {
+                    if (index + 1 === stepNum) {
+                        step.classList.add("active");
+                        step.textContent = step.textContent.replace("⏳", "✓");
+                    } else if (index + 1 < stepNum) {
+                        step.classList.remove("active");
+                        step.classList.add("done");
+                    }
+                });
+            }
+
+            scrollToBottom() {
+                this.terminal.scrollTop = this.terminal.scrollHeight;
+            }
+
+            executeTimeline() {
+                this.timeline.forEach(event => {
+                    setTimeout(event.action, event.time);
+                });
+            }
+
+            showFinal() {
+                this.finalScreen.classList.add("active");
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const app = new SyllabusTransformer();
+
+            document.addEventListener("click", () => {
+                app.showFinal();
+            });
+
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "Escape") {
+                    app.finalScreen.classList.remove("active");
+                }
+            });
+        });
+    </script>
+</body>
+</html>
