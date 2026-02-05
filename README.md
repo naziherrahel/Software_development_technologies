@@ -15,7 +15,7 @@ The goal of this course is to help you:
 * Gain hands-on experience with **version control systems** and **containerization**
 * Learn how development, deployment, and collaboration fit together in real-world projects
 
-Rather than isolated exercises, you will **incrementally build and reuse the same project across multiple labs**. Each lab adds a new layer of understanding and tooling.
+Rather than isolated exercises, you will **incrementally build and reuse the projects across multiple labs**. Each lab adds a new layer of understanding and tooling.
 
 This approach reflects how real software systems are developed and maintained.
 
