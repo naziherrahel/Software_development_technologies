@@ -54,8 +54,6 @@ Main tools used throughout the course:
 * Git (version control)
 * Docker (containerization)
 
-> No university-provided virtual machines or cloud accounts are required.
-
 ---
 
 ## 4. Course Outline (High-Level)
