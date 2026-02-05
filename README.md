@@ -75,7 +75,7 @@ Each topic will be introduced through **hands-on labs** rather than purely theor
 Attendance is **mandatory**.
 
 * If you miss **20% or more** of the course sessions, this will result in an **automatic fail**, regardless of grades obtained in other components.
-* Attendance may be checked during lectures, labs, or presentations.
+* Attendance may be checked during lectures, labs.
 
 Plan accordingly and communicate early if exceptional circumstances arise.
 
