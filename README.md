@@ -75,7 +75,7 @@ Each topic will be introduced through **hands-on labs** rather than purely theor
 Attendance is **mandatory**.
 
 * If you miss **20% or more** of the course sessions, this will result in an **automatic fail**, regardless of grades obtained in other components.
-* Attendance may be checked during lectures, labs.
+* Attendance will be checked during lectures, labs.
 
 Plan accordingly and communicate early if exceptional circumstances arise.
 
@@ -87,9 +87,9 @@ Each student is required to deliver **three (3) presentations** during the cours
 
 Presentation requirements:
 
-* Duration: **7–10 minutes** each
+* Duration: **8–12 minutes** each
 * Format: **Slides**
-* Slides must be **submitted before the class** where the presentation is given
+* Slides must be **submitted before the class** where the presentation is given!
 
 Presentation topics and schedule will be announced during the course.
 
@@ -129,14 +129,14 @@ If you use external resources, make sure you understand how they work and can ex
 
 * Attend classes regularly
 * Do not rush through labs
-* Focus on understanding, not just completing tasks
+* Focus on understanding, not just completing tasks!
 * Ask questions early when something is unclear
 * Treat labs as real engineering exercises, not checklists
 
 ---
 ## 9. Learning Resources & Background Material
 
-In addition to the materials provided during this course, students may find the following resources useful for background study and revision.
+In addition to the materials provided during this course, you may find the following resources useful for background study and revision.
 
 ### Previous Course Materials (Optional)
 
