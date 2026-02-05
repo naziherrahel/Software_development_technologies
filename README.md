@@ -26,7 +26,7 @@ This approach reflects how real software systems are developed and maintained.
 This is a **practice-first course**.
 
 * Most learning happens through **labs and exercises**, not memorization
-* Concepts are introduced only when they are needed
+* Concepts are introduced when they are needed
 * You are expected to **run, modify, and understand code**
 
 You are *allowed* to use provided reference code, but you are **responsible for understanding what you submit**.
