@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Transaction Monitor</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>Transaction Monitor</h1>
+
+    <form method="post" action="/add">
+        <input type="number" step="0.01" name="amount" placeholder="Amount" required>
+        <input type="text" name="description" placeholder="Description" required>
+        <button type="submit">Add Transaction</button>
+    </form>
+
+    <h2>Transaction History</h2>
+    <ul>
+        {% for t in transactions %}
+        <li>{{ t.amount }} - {{ t.description }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
