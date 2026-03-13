@@ -1,4 +1,4 @@
-# Lab 06 — Collaborative Data Pipeline with Git (Revised)
+# Lab 06 — Collaborative Data Pipeline with Git 
 
 ## 1. Objective
 
