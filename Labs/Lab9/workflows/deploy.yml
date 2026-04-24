@@ -1,0 +1,74 @@
+name: CD Pipeline
+
+on:
+  workflow_run:
+    workflows:
+      - CI Pipeline
+    types:
+      - completed
+
+permissions:
+  actions: read
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  report-and-deploy:
+    name: Generate Report and Deploy
+    if: >
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'main'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Check out repository at tested commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Download report artifact from CI
+        uses: actions/download-artifact@v4
+        with:
+          name: report-inputs
+          path: downloaded-artifact
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ github.event.workflow_run.id }}
+
+      - name: Render static report
+        env:
+          PIPELINE_RUN_NUMBER: ${{ github.event.workflow_run.run_number }}
+          COMMIT_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          python src/render_report.py \
+            --template docs/index.html \
+            --metrics downloaded-artifact/metrics.json \
+            --metrics-text downloaded-artifact/metrics.txt \
+            --matrix downloaded-artifact/confusion_matrix.png \
+            --output site/index.html
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
